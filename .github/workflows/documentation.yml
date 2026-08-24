@@ -61,4 +61,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "PROJECT DOCUMENTATION.md"
           git diff --cached --quiet || git commit -m "Automate project documentation"
+          git pull --rebase origin main
           git push
