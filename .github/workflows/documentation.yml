@@ -1,0 +1,64 @@
+name: DevOps Documentation Automation
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate documentation
+        run: |
+          echo "# DevOps Project Documentation" > "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "## Project Overview" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "This document is automatically generated from the Git history of the DevOps project." >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "## Repository Information" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "- Repository: ${{ github.event.repository.name }}" >> "PROJECT DOCUMENTATION.md"
+          echo "- Branch: main" >> "PROJECT DOCUMENTATION.md"
+          echo "- Total commits: $(git rev-list --count HEAD)" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "## Latest Project Change" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          git log -1 --pretty=format:"%h - %s - %an" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "## Git Commit History" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          git log --pretty=format:"- %h | %s | %an" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "## Contributors" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          git log --format="%an" | sort -u | sed 's/^/- /' >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "## Repository Statistics" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "- Number of commits: $(git rev-list --count HEAD)" >> "PROJECT DOCUMENTATION.md"
+          echo "- Tracked files: $(git ls-files | wc -l | tr -d ' ')" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "## Automation Status" >> "PROJECT DOCUMENTATION.md"
+          echo "" >> "PROJECT DOCUMENTATION.md"
+          echo "Documentation generated automatically using GitHub Actions." >> "PROJECT DOCUMENTATION.md"
+
+      - name: Commit generated documentation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "PROJECT DOCUMENTATION.md"
+          git diff --cached --quiet || git commit -m "Automate project documentation"
+          git push
